@@ -21,12 +21,22 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set env variable for fast indexer
+        run: echo "PYMAVLINK_FAST_INDEX=1" >> $env:GITHUB_ENV
       - name: Install dependencies
         run: |
           python3 -m pip install -U wheel setuptools pip
-          python3 -m pip install -U pywin32 lxml pymavlink numpy matplotlib pyserial opencv-python PyYAML Pygame Pillow wxpython prompt-toolkit scipy
+          python3 -m pip install -U pywin32 lxml numpy matplotlib pyserial opencv-python PyYAML Pygame Pillow wxpython prompt-toolkit scipy
           python3 -m pip install -U openai wave pyaudio
-          python3 -m pip install -U pyinstaller==6.7.0 packaging 
+          python3 -m pip install -U pyinstaller==6.7.0 packaging
+      - name: Install pymavlink from branch
+        run: |
+          git clone https://github.com/ardupilot/mavlink.git
+          git clone https://github.com/robertlong13/pymavlink.git
+          cd pymavlink
+          git checkout pr/dfreader-speedup
+          python3 -m pip -v install .
+          cd ..
       - name: Download Inno Setup installer
         run: curl -L -o installer.exe http://files.jrsoftware.org/is/6/innosetup-6.3.1.exe
       - name: Install Inno Setup
